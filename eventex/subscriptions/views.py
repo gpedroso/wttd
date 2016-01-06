@@ -1,6 +1,7 @@
+from django.conf import settings
 from django.core import mail
 from django.contrib import messages
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from eventex.subscriptions.forms import SubscriptionForm
@@ -8,18 +9,34 @@ from eventex.subscriptions.forms import SubscriptionForm
 
 def subscribe(request):
     if request.method == 'POST':
-        form = SubscriptionForm(request.POST)
-
-        if form.is_valid():
-            body = render_to_string('subscriptions/subscription_email.txt', form.cleaned_data)
-            mail.send_mail('Confirmação Inscrição',
-                           body,
-                           'contato@eventex.com.br',
-                           ['contato@eventex.com.br',form.cleaned_data['email']],)
-            messages.success(request, 'Inscrição realizada com sucesso!')
-            return HttpResponseRedirect('/inscricao/')
-        else:
-            return render(request, 'subscriptions/subscription_form.html',{'form': form})
+        return create(request)
     else:
-        context = {'form': SubscriptionForm()}
-        return render(request,'subscriptions/subscription_form.html',context)
+        return new(request)
+
+def create(request):
+    form = SubscriptionForm(request.POST)
+
+    if not form.is_valid():
+        return render(request, 'subscriptions/subscription_form.html',{'form': form})
+
+    #send email
+    _send_email('subscriptions/subscription_email.txt'
+                ,form.cleaned_data
+                ,'Confirmação Inscrição'
+                ,settings.DEFAULT_FROM_EMAIL
+                ,form.cleaned_data['email'] )
+
+    #success feedback
+    messages.success(request, 'Inscrição realizada com sucesso!')
+    return HttpResponseRedirect('/inscricao/')
+
+def _send_email(template, context, title, from_, to):
+    body = render_to_string(template, context)
+    mail.send_mail(title,
+                   body,
+                   from_,
+                   [from_,to],)
+
+def new(request):
+    return render(request,'subscriptions/subscription_form.html',
+                  {'form': SubscriptionForm()})
