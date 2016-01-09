@@ -2,6 +2,10 @@
 
 Sistema de eventos encomendado pela Morena.
 
+[![Build Status](https://travis-ci.org/gpedroso/wttd.svg?branch=master)](https://travis-ci.org/gpedroso/wttd)
+
+[![Code Climate](https://codeclimate.com/github/gpedroso/wttd/badges/gpa.svg)](https://codeclimate.com/github/gpedroso/wttd)
+
 ## Como desenvolver
 
 1. clone o repositório
