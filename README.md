@@ -11,7 +11,7 @@ Sistema de eventos encomendado pela Morena.
 5. Configura a instância com o .env
 6. Execute os testes.
 
-'''console
+```console
 git clone git@github.com:gpedroso/wttd.git wttd
 cd wttd
 python -m venv .wttd
@@ -19,7 +19,7 @@ python -m venv .wttd
 pip install -r requirements.txt
 cp contrib/env-sample .env
 python manage.py test
-'''
+```
 
 ## Como fazer o deploy?
 
@@ -30,11 +30,11 @@ python manage.py test
 5. Configure o serviço de email.
 6. Envie o código para o heroku.
 
-'''console
+```console
 heroku create minhainstancia
 heroku config:push
 heroku config:set SECRET_KEY=`python contrib/secret_gen.py`
 heroku config:set DEBUG=False
 # configure o email
 git push heroku master --force
-'''
+```
