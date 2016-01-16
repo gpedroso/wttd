@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from eventex.subscriptions.forms import SubscriptionForm
+from eventex.subscriptions.models import Subscription
 
 
 def subscribe(request):
@@ -25,6 +26,8 @@ def create(request):
                 ,'Confirmação Inscrição'
                 ,settings.DEFAULT_FROM_EMAIL
                 ,form.cleaned_data['email'] )
+
+    Subscription.objects.create(**form.cleaned_data)
 
     #success feedback
     messages.success(request, 'Inscrição realizada com sucesso!')
