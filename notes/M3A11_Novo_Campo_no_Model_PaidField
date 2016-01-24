@@ -18,5 +18,6 @@ aplicar as migrations
 > manage migrate
 
 incluir o campo 'paid' no model admin
-
-
+> list_display = ('name','email','phone','cpf','created_at','subscribed_today','paid')
+incluir na opção de filtros
+> list_filter = ('paid','created_at',)

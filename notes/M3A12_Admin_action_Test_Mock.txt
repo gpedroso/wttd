@@ -26,26 +26,68 @@ verificar se existe a action mark_as_paid
 No model admin, SubscriptionModelAdmin, incluir a 'mark_as_paid' na lista de actions
 >  actions = ['mark_as_paid']
 
-
-
-Criar inscrição
-criar um queryset recebendo todos os Subscription: queryset = Subscription.objects.all()
+.....
+Testar a aplicação da action usando um queryset simulando os dados
+> def test_mark_all(self):
+Criar Subscription Object
+criar um queryset recebendo todos os Subscription:
+> queryset = Subscription.objects.all()
 
 instanciar model_admin
-model_admin = SubscriptionModelAdmin(Subscription.objects.all()
-chamar action passando o queryset: model_admin.mark_as_paid(None, queryset)
+> model_admin = SubscriptionModelAdmin(Subscription.objects.all()
+chamar action passando o queryset:
+> model_admin.mark_as_paid(None, queryset)
 """None pq não tenho request,
+
 assertequal(total_esperado, query)
+> self.assertEqual(1, Subscription.objects.filter(paid=True).count())
+
+definir o metodo para mark_as_paid em model admin
+> def mark_as_paid(self, request, queryset):
+
+aplicar paid=True para todo o queryset recebido
+> queryset.update(paid=True);
+
+incluir short_description para a action, setando a propriedade Short_description do objeto
+> mark_as_paid.short_description = 'marcar como pago'
+
+....
+testar mensagem de sucesso
+test_message, iremos mockar o message user pois não preciso testar o admin, apenas a action
+
+> def test_message(self):
+Criar Subscription Object com os dados de teste
+criar um queryset recebendo todos os Subscription:
+> queryset = Subscription.objects.all()
+
+instanciar model_admin
+> model_admin = SubscriptionModelAdmin(Subscription.objects.all()
+chamar action passando o queryset:
+>  model_admin.mark_as_paid(None, queryset)
+
+criar mock
+> mock = Mock()
+> old_message_user = SubscriptionModelAdmin.message_user
+> SubscriptionModelAdmin.message_user = mock
+
+Teste da mensagem fazendo assert do mock
+> mock.assert_called_once_with(None, '1 inscrição realizada com sucesso')
+voltando antigo message_user
+> SubscriptionModelAdmin.message_user = old_message_user
 
 
-test_message, iremos mockar o message user
+...
+em admin.py, incluir a chamada do message user customizado
+        count = queryset.update(paid=True)
+        if count ==1:
+            msg = '{} inscrição foi marcada como paga'
+        else:
+            msg = '{} inscrições foram marcadas como pagas.'
+        self.message_user(request, msg.format(count))
 
+...
+Ao rodar os testes sera apresentado erro no test_mark_all,
+isso pq o mock deve ser feito nessa função test_mark_all tambem.
 
-
-
-em model admin:
-criar lista actions = ['mark_as_paid']
-
-criar metodo mark_as_paid(self, request, queryset)
-	queryset.update(paid=True)
-mark_as_paid.short_description = 'Marcar como pago'
+...
+refatorar com a criação do setUp
