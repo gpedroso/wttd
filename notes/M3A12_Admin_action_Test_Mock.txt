@@ -1,0 +1,51 @@
+Implementando uma custom action do admin
+
+Criar teste:
+test_admin.py
+
+> import djangp.test import TestCase
+
+importar os modelos SubscriptionModelAdmin, Subscription, admin
+
+> from eventex.subscriptions.admin import SubscriptionModelAdmin, Subscription, admin
+
+Criar a classe SubscriptionmodelAdminTest(TestCase)
+
+primeiro teste é verificar se existe uma action instalada
+
+> def test_has_action(self):
+>        """Action mark_as_paid should be installed."""
+não vamos usar self.client aqui pois não queremos testar o admin. Vamos fazer um teste unitário apenas na action.
+
+instanciar SubscriptionModelAdmin passando o Subscription e
+A doc do Django diz que qualquer model admin recebe como parametro o Model e a isntância do admin site
+> model_admin = SubscriptionModelAdmin(Subscription, admin.site)
+verificar se existe a action mark_as_paid
+> self.assertIn('mark_as_paid', model_admin.actions)
+
+No model admin, SubscriptionModelAdmin, incluir a 'mark_as_paid' na lista de actions
+>  actions = ['mark_as_paid']
+
+
+
+Criar inscrição
+criar um queryset recebendo todos os Subscription: queryset = Subscription.objects.all()
+
+instanciar model_admin
+model_admin = SubscriptionModelAdmin(Subscription.objects.all()
+chamar action passando o queryset: model_admin.mark_as_paid(None, queryset)
+"""None pq não tenho request,
+assertequal(total_esperado, query)
+
+
+test_message, iremos mockar o message user
+
+
+
+
+em model admin:
+criar lista actions = ['mark_as_paid']
+
+criar metodo mark_as_paid(self, request, queryset)
+	queryset.update(paid=True)
+mark_as_paid.short_description = 'Marcar como pago'

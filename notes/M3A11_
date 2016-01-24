@@ -1,0 +1,22 @@
+Incluir o campo 'paid' no model Subscription
+
+Test First:
+> def test_paid_default_false(self):
+garantir que sempre será criado um registro com a informação de pago=false
+assert verificando se valor de Subscription Object é false
+> self.assertEqual(False, self.obj.paid)
+
+Incluir no model o campo paid
+> paid = models.BooleanField('Pago', default=False)
+rodar testes com a flag --nomigrations, conforme já visto, para que não tenha que gerar migrations
+>manage test --nomigrations
+
+executar o manage makemigrations para criar a migração
+> manage makemigrations
+
+aplicar as migrations
+> manage migrate
+
+incluir o campo 'paid' no model admin
+
+
