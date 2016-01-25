@@ -1,0 +1,67 @@
+Utilizando o validator para validar campos de um formulário
+
+#não aceitar cpf menor de 11 digitos e com letras.
+
+criar o test de letras
+> def test_cpf_is_digit(self):
+gerar dicionario de dados com dado errado.
+
+>data = dict(name='Gabriel Pedorso', cpf='ABCD5054818',email='gpedroso@gmail.com', phone='11-111111111')
+instanciar form passando o dicionario de dados
+>form = SubscriptionForm(data)
+is_valid ira executar todoso os metodos de validação do form. Iremos fericar se algum erro fois associado ao campo
+>form.is_valid()
+
+form.errors é um dicionário onde a chave é o campo com erro associado e o valor é uma
+lista com os erros associados aquele campo, um campo pode ter mais de um erro.
+
+Iremos analisar a lista de cpf de erros para verificar se existe erro associado ao cpf
+> self.assertListEqual(['cpf'],list(form.errors))
+
+todo validator no django recebe um campo como entrada (value) e dispara uma exceção
+do tipo validation_error quando um erro acontece,não retorna nada. Se nenhum erro
+acontecer o metodo não faza nada
+no forms, incluir:
+> cpf = forms.CharField(label="CPF", validators=[validate_cpf])
+
+>from django.core.exceptions import ValidationError
+>def validate_cpf(value):
+isdigit para verificar se existre apenas digitos
+>    if not value.isdigit():
+raise dispasa a exceção gerada
+>        raise ValidationError('CPF deve conter apenas números')
+
+validar 11 digitos
+test first:
+>def test_cpf_has_11_digits(self):
+>   """CPF must have 11 digits"""
+>   data = dict(name='Gabriel Pedorso', cpf='12345', email='gpedroso@gmail.com', phone='11-111111111')
+>   form = SubscriptionForm(data)
+>   form.is_valid()
+>   self.assertListEqual(['cpf'],list(form.errors))
+
+no forms, em test_cpf_has_11_digits(self), incluir:
+> if len(value) < 11:
+>    raise ValidationError('CPF deve conter 11 dígitos')
+
+....
+refatorar teste
+....
+criar metodo make_validated_form que consolida a criação do dicionario de dados, instancia
+de form e se o form é valido ou não.
+> def make_validated_form(self,**kwargs):
+teremos um dicionario com os dados válidos, o **kwargs recebe o novo valor de um campo
+a linha
+> data = dict(valid, **kwargs)
+aplica a mudança de valores de chaves conforme passado em **kwargs
+
+> def make_validated_form(self,**kwargs):
+>        valid = dict(name='Gabriel Pedorso', cpf='12345678910',email='gpedroso@gmail.com', phone='11-111111111')
+>        data = dict(valid, **kwargs)
+>        form = SubscriptionForm(data)
+>        form.is_valid()
+>        return form
+
+o setUpo não é necessário, uma vez que o form instanciado é usado uma única vez.
+Pode ser instanciado no próprio test_has_fields
+
