@@ -14,11 +14,15 @@ class SubscriptionFormTest(TestCase):
         form = self.make_validated_form(cpf='ABCD5678910')
         self.assertFormErrorCode(form, 'cpf', 'digits')
 
-
     def test_cpf_has_11_digits(self):
         """CPF must have 11 digits"""
         form = self.make_validated_form(cpf='1234')
         self.assertFormErrorCode(form, 'cpf', 'length')
+
+    def test_cpf_has_no_more_than_11_digits(self):
+        """CPF must have 11 digits"""
+        form = self.make_validated_form(cpf='123456789000000')
+        self.assertFormErrorCode(form, 'cpf', 'length>11')
 
     def assertFormErrorCode(self, form, field, code):
         errors = form.errors.as_data()
