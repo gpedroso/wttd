@@ -18,11 +18,14 @@ class SubscriptionFormTest(TestCase):
         """CPF must have 11 digits"""
         form = self.make_validated_form(cpf='1234')
         self.assertFormErrorCode(form, 'cpf', 'length')
-
-    def test_cpf_has_no_more_than_11_digits(self):
-        """CPF must have 11 digits"""
         form = self.make_validated_form(cpf='123456789000000')
-        self.assertFormErrorCode(form, 'cpf', 'length>11')
+        self.assertFormErrorCode(form, 'cpf', 'length')
+
+    def test_name_must_be_capitalized(self):
+        """Name must be cpitalizaed"""
+        #GABRIEL Pedroso -> Gabriel Pedroso
+        form = self.make_validated_form(name='GABRIEL Pedroso')
+        self.assertEqual('Gabriel Pedroso', form.cleaned_data['name'])
 
     def assertFormErrorCode(self, form, field, code):
         errors = form.errors.as_data()
