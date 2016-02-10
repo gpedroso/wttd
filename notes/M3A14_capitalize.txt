@@ -1,0 +1,24 @@
+Padronizar nomes, primeira letra maiuscula e as demais minusculas
+
+criar o test que verifica se a string esta sendo formatada no formato esperado
+>def test_name_must_be_capitalized(self):
+>        """Name must be cpitalizaed"""
+>        #GABRIEL Pedroso -> Gabriel Pedroso
+>        form = self.make_validated_form(name='GABRIEL Pedroso')
+>        self.assertEqual('Gabriel Pedroso', form.cleaned_data['name'])
+
+criar um metodo em forms que alterar o valor do campo para o formato esperado
+
+Obs: O formulário procura por qualquer método iniciado por clean_<nome_campo_formulario>, no caso, para o campo "name"
+fica o método clean_name(), e chama esse método como complemento de validação do campo em si. O próprio CharField do
+form já possui um método clean. Depois de chamar o clean do CharField, se o formulário implementar um clean_ para o
+campo, este será cahamado. Sempre devo retornar algum valor válido nesse método.
+Ótima opção para extender o comportamento de um campo sem criar novas classes.
+
+>def clean_name(self):
+        #vamos pegar o valor do cleaned_data para o campo, uma vez que já passou pelo clean_ do CharField
+>        name = self.cleaned_data['name']
+>        words = [w.capitalize() for w in name.split()]
+        #sempre devo retornar algum valor pois o cleaned_data['name'] será alterado por esse valor.
+>        return ' '.join(words)
+

@@ -4,8 +4,6 @@ from django.shortcuts import resolve_url as r
 from eventex.subscriptions.forms import SubscriptionForm
 from eventex.subscriptions.models import Subscription
 
-
-
 class SubscriptionsNewGet(TestCase):
     def setUp(self):
         self.resp = self.client.get(r('subscriptions:new'))
@@ -77,3 +75,8 @@ class SubscriptionsNewPostInvalid(TestCase):
     def test_dont_save_subscription(self):
         self.assertFalse(Subscription.objects.exists())
 
+class TemplateRegressionTest(TestCase):
+    def test_Template_has_non_field_erros(self):
+        invalid_data = dict(name='Gabriel Pedroso', cpf='12345678910')
+        response = self.client.post(r('subscriptions:new'),invalid_data)
+        self.assertContains(response,'<ul class="errorlist nonfield">')

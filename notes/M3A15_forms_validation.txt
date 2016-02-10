@@ -1,0 +1,62 @@
+Vamos criar uma validação de formulário. Email e telefone serão opcionais, no entanto, um dos dois deve ser preenchido.
+Caso nenhum dos dois esteja preenchido, iremos criar um erro do formulário, ou seja, não será atribuido erro a um
+campo específico, mas ao form.
+
+Para validar email, vamos criar o teste
+>    def test_email_is_optional(self):
+>        """Email is optional"""
+>        form = self.make_validated_form(email='')
+>        self.assertFalse(form.errors)
+
+Alterar o email para que não seja obrigatório
+> email = forms.EmailField(label="Email", required=False)
+
+Para validar phone, vamos criar o teste
+>    def test_phone_is_optional(self):
+>        """Email is optional"""
+>        form = self.make_validated_form(phone='')
+>        self.assertFalse(form.errors)
+
+Alterar o phone para que não seja obrigatório
+>phone = forms.CharField(label="Telefone", required=False)
+
+
+agora o teste que verifica se um dos dois está preenchido
+>   def test_must_inform_email_or_phone(self):
+>        """Email and phone are optional, but one must be informed"""
+>        form = self.make_validated_form(email='',phone='')
+#erro especial aqui, lista ['__all__'], erro do formulário.
+>        self.assertListEqual(['__all__'], list(form.errors))
+
+Alterar o forms para que faça a validação de ao menos um campo preenchido
+Para isso, em forms, vamos criar o método clean(), que será executado após a execução dos clean_fileds setados
+
+>def clean(self):
+>     if not self.cleaned_data['email'] and not self.cleaned_data['phone']:
+>         raise ValidationError('Informe seu email ou telefone.')
+#deve sempre retornar o cleaned_data, pois o original será sempre substituido por esse.
+>     return self.cleaned_data
+
+Refatorar substituindo o cleaned_data[] por self.cleaned_data.get() pois o get() pega o conteúdo tanto do cleaned_data
+quanto do form.errors enquanto o cleaned_data[] não pega nada da lista de erros.
+
+> if not self.cleaned_data.get('email') and not self.cleaned_data.get('phone'):
+
+
+Agora devemos configurar o template para exibir as mensagens de erro do formulário.
+Test first:
+
+Em test_view_new.py, criar uma nova classe de regression test com um único método
+primeiro iremos criar um dicionário com apenas nome e cpf, para forçar a exibição da mensagem de erro do formulário
+na sequencia, iremos fazer um post 'self.client.post', passando a rota 'subscription:new' e o dict invalido
+ para a função r (from django.shortcuts import resolve_url as r)
+o response irá receber o html que conterá a tag '<ul/>' com a classe 'errorlist'
+
+>class TemplateRegressionTest(TestCase):
+>    def test_Template_has_non_field_erros(self):
+>        invalid_data = dict(name='Gabriel Pedroso', cpf='12345678910')
+>        response = self.client.post(r('subscriptions:new'),invalid_data)
+>        self.assertContains(response,'<ul class="errorlist nonfield">')
+
+em subscription_form.html teremos que adicionar a variavel de template {{ form.non_field_errors }} logo após de
+{% csrf_token %}
