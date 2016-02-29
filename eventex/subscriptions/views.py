@@ -29,7 +29,7 @@ def create(request):
                 ,settings.DEFAULT_FROM_EMAIL
                 ,subscription.email )
 
-    return HttpResponseRedirect(r('subscriptions:detail',subscription.pk))
+    return HttpResponseRedirect(r('subscriptions:detail',subscription.keyHash))
 
 def _send_email(template, context, title, from_, to):
     body = render_to_string(template, context)
@@ -42,9 +42,9 @@ def empty_form(request):
     return render(request,'subscriptions/subscription_form.html',
                   {'form': SubscriptionForm()})
 
-def detail(request,pk):
+def detail(request,keyHash):
     try:
-        subscription = Subscription.objects.get(pk=pk)
+        subscription = Subscription.objects.get(keyHash=keyHash)
     except Subscription.DoesNotExist:
         raise Http404
 

@@ -11,7 +11,7 @@ class SubscriptionDetailGet(TestCase):
             email='gpedroso@gmail.com',
             phone='11-111111111'
         )
-        self.resp = self.client.get(r('subscriptions:detail', self.obj.pk))
+        self.resp = self.client.get(r('subscriptions:detail', self.obj.keyHash))
 
     def test_get(self):
         self.assertEqual(200, self.resp.status_code)
