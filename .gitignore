@@ -8,5 +8,6 @@ __pycache__
 staticfiles
 paginas-de-erro.zip
 .ipynb_checkpoints/
+.config
 
 
